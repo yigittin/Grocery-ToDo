@@ -7,28 +7,46 @@ function App() {
   const [list,setList]=useState([]);
   const [isEditing,setIsEditing]=useState(false);
   const [editID,setEditID]=useState(null);
-  const [alet,setAlert]=useState({show:false,msg:'',type:''})
+  const [alert,setAlert]=useState({
+    show:false,
+    msg:'',
+    type:''})
 
   const handleSubmit=(e)=>{
     e.preventDefault();
     if(!name){
       //display alert
+      showAlert(true,'danger','please enter text')
     }
     else if(name && isEditing){
       //edit
     }
     else{
       //show alert
+      showAlert(true,'success','item added')
       const newItem={id:new Date().getTime().toString(),title:name}
       setList([...list,newItem]);
       setName('')
     }
   }
 
+  const clearList=()=>{
+    showAlert(true,'danger','empty list');
+    setList([])
+  }
+
+  const removeItem=(id)=>{
+    showAlert(true,'danger','item deleted')
+    setList(list.filter((item)=>item.id!==id))
+  }
+
+  const showAlert=(show=false,type='',msg='')=>{
+    setAlert({show,type,msg})
+  }
   return (
     <section className='section-center'>
       <form className='grocery-form' onSubmit={handleSubmit}>
-        {alet.show&&<Alert/>}
+        {alert.show&&<Alert {...alert} removeAlert={showAlert} list={list}/>}
         <h3>grocery bud</h3>
         <div className="form-control">
           <input type="text" className='grocery' placeholder='e.g. eggs'
@@ -40,8 +58,8 @@ function App() {
       </form>
       {list.length>0&&
       <div className="grocery-container">
-      <List items={list}/>
-      <button className='clear-btn'>clear items</button>
+      <List items={list} removeItem={removeItem}/>
+      <button className='clear-btn'onClick={clearList}>clear items</button>
     </div>
       }
     
